@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var gameStateNavBar: UINavigationBar!
     @IBOutlet var gameButtons: [UIButton]!
 
-    var game = LinearLightsOutGame(numLights: 13)
+    var game = LinearLightsOut(numLights: 13)
     var solved: Bool = false
     
     override func viewDidLoad() {
@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func pressedNewGame(_ sender: Any) {
-        game = LinearLightsOutGame(numLights: 13)
+        game = LinearLightsOut(numLights: 13)
         viewDidLoad()
     }
     
@@ -36,7 +36,7 @@ class ViewController: UIViewController {
         if !solved {
             let gameBoardButton = sender as! UIButton
             print(gameBoardButton.tag)
-            if(!game.pressedLightAtIndex(gameBoardButton.tag)){ //if game is not solved yet
+			if(!game!.pressedLight(at: gameBoardButton.tag)){ //if game is not solved yet
                 updateView()
                 var allOff: Bool = true
                 for i in 0..<13{
@@ -52,9 +52,9 @@ class ViewController: UIViewController {
             } else {
                 solved = true;
                 if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClass.compact) {
-                    gameStateLabel.text = "You win! Total moves: \(game.moves)"
+                    gameStateLabel.text = "You win! Total moves: \(game!.movesTaken)"
                 } else {
-                    gameStateNavBar.topItem?.title = "You win! Total moves: \(game.moves)"
+                    gameStateNavBar.topItem?.title = "You win! Total moves: \(game!.movesTaken)"
                 }
             }
         }
@@ -62,26 +62,27 @@ class ViewController: UIViewController {
     
     func displayWin() {
         if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClass.compact) {
-            gameStateLabel.text = "You win! Total moves: \(game.moves)"
+            gameStateLabel.text = "You win! Total moves: \(game!.movesTaken)"
         } else {
-            gameStateNavBar.topItem?.title = "You win! Total moves: \(game.moves)"
+            gameStateNavBar.topItem?.title = "You win! Total moves: \(game!.movesTaken)"
         }
     }
     
     func updateView() {
         if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClass.compact) {
-            gameStateLabel.text = "Moves: \(game.moves)"
+            gameStateLabel.text = "Moves: \(game!.movesTaken)"
         } else {
-            gameStateNavBar.topItem?.title = "Moves: \(game.moves)"
+            gameStateNavBar.topItem?.title = "Moves: \(game!.movesTaken)"
         }
         for i in 0..<13 {
             let button = gameButtons[i]
-            switch (game.lightStates[i]) {
-            case true:
+			
+            if game!.getLightStates(i) {
                 button.setBackgroundImage(#imageLiteral(resourceName: "light_off"), for: UIControlState.normal)
-            case false:
-                button.setBackgroundImage(#imageLiteral(resourceName: "light_on"), for: UIControlState.normal)
-            }
+			}
+			else {
+				button.setBackgroundImage(#imageLiteral(resourceName: "light_on"), for: UIControlState.normal)
+			}
         }
     }
     
